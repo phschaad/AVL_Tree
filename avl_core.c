@@ -6,50 +6,67 @@
 
 #include "avl_core.h"
 
-/*
- * Entry Point.
- */
-int main(int argc, char **argv){
-  /*
-
-
-
-
-   */
-  return 0;
-}
-
-
 
 /*
- * Function: key_lookup
- * --------------------
- * Description: 
- * Key lookup function searches for a specific node
- * in the tree, according to it's direct order-key.
- * 
- * Arguments: key - The identification key in the BST.
- *            tree - The corresponding tree.
- *
- * Returns: Node - The node that was found while searching
- *                 for that key. (May be NULL). [POINTER]!
- */
-Node * key_lookup(int key, AvlTree *tree){
-
-}
-
-/*
- * Functoin: get_height
+ * Function: search_key
  * --------------------
  * Description:
- * Returns the current total height of the tree.
+ * Searches a node in a tree, according to 
+ * its order key. If the key is found, return
+ * one, if not, return 0. The function takes
+ * a node-pointer as an argument and assigns
+ * it the node, if it was found. If not, the
+ * Pointer will point to the parent node, of 
+ * where the node would have been.
  *
- * Arguments: tree - Pointer to the corresponding tree.
+ * Arguments: tree - The AVL tree to search.
+ *            key  - The order key of the to-search node
+ *            node - The pointer to the node.
  *
- * Returns: int - height of the tree.
+ * Returns:   1    - If node found.
+ *            0    - If node not found.
+ *            -1   - Fatal error.
  */
-int get_height(AvlTree *tree){
+int search_key(AvlTree *tree, int key, Node *node){
+  // Safety-check for existence of the tree.
+  if(tree == NULL || tree->root == NULL){
+    return 0;
+  }
+  // If the tree exists, continue here.
 
+  // Pointer to the "active" node in the search.
+  Node *active = tree->root; // (Start at root).
+
+  // Iterate over the tree.
+  while(true){
+    // Compare the key to the one of active.
+    if(key < active->key){
+      // The key would be to the left of active.
+      if(active->left_child == NULL){
+	// The tree does not contain the key.
+	node = active; // Return the parent.
+	return 0;
+      }
+      // Continue iteration.
+      active = active->left_child;
+    }else if(key > active->key){
+      // The key would be to the right of active.
+      if(active->right_child == NULL){
+	// The tree does not contain the key.
+	node = active; // Return the parent.
+	return 0;
+      }
+      // Continue iteration.
+      active = active->right_child;
+    }else{
+      // The active node contains the key!
+      node = active; // Return active.
+      return 1;
+    }
+  }
+
+  // Safety fall-thru. Returns on fatal error.
+  return -1;
 }
 
 /*
