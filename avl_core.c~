@@ -1,0 +1,20 @@
+/* Basic AVL-Tree implementation - Core module */
+/*
+ * Author: Philipp Schaad
+ * Creation Date: 011015 
+ */
+
+#include "avl_core.h"
+
+/*
+ * Entry Point.
+ */
+int main(int argc, char **argv){
+  /*
+
+
+
+   */
+  return 0;
+}
+
