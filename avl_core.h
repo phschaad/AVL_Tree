@@ -100,4 +100,32 @@ int search_key(AvlTree *tree, int key, Node *node);
  */
 void traverse_inorder_console(Node *node);
 
+/*
+ * Function: travere_postorder_console
+ * -----------------------------------
+ * Description:
+ * This function does a (recursive) postorder traversal
+ * of the AVL-Tree. The ouput is console-based, being
+ * displayed as a one-line string.
+ * 
+ * Arguments: node - The node the recursion is at.
+ * 
+ * Returns: void
+ */
+void traverse_postorder_console(Node *node);
+
+/*
+ * Function: travere_preorder_console
+ * ----------------------------------
+ * Description:
+ * This function does a (recursive) preorder traversal
+ * of the AVL-Tree. The ouput is console-based, being
+ * displayed as a one-line string.
+ * 
+ * Arguments: node - The node the recursion is at.
+ * 
+ * Returns: void
+ */
+void traverse_preorder_console(Node *node);
+
 #endif /*  _AVL_CORE_H_ */

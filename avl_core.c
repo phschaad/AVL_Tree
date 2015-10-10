@@ -82,5 +82,52 @@ int search_key(AvlTree *tree, int key, Node *node){
  * Returns: void
  */
 void traverse_inorder_console(Node *node){
-  
+  // Check if the node exists, if yes, do traversal.
+  if(node != NULL){
+    traverse_inorder_console(node->left_child);
+    printf("%d ", node->key);
+    traverse_inorder_console(node->right_child);
+  }
+}
+
+/*
+ * Function: travere_postorder_console
+ * -----------------------------------
+ * Description:
+ * This function does a (recursive) postorder traversal
+ * of the AVL-Tree. The ouput is console-based, being
+ * displayed as a one-line string.
+ * 
+ * Arguments: node - The node the recursion is at.
+ * 
+ * Returns: void
+ */
+void traverse_postorder_console(Node *node){
+  // Check if node exists, if yes, do traversal.
+  if(node != NULL){
+    traverse_postorder_console(node->left_child);
+    traverse_postorder_console(node->right_child);
+    printf("%d ", node->key);
+  }
+}
+
+/*
+ * Function: travere_preorder_console
+ * ----------------------------------
+ * Description:
+ * This function does a (recursive) preorder traversal
+ * of the AVL-Tree. The ouput is console-based, being
+ * displayed as a one-line string.
+ * 
+ * Arguments: node - The node the recursion is at.
+ * 
+ * Returns: void
+ */
+void traverse_preorder_console(Node *node){
+  // Check if node exists, if yes, do traversal.
+  if(node != NULL){
+    printf("%d ", node->key);
+    traverse_preorder_console(node->left_child);
+    traverse_preorder_console(node->right_child);
+  }
 }
