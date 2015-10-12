@@ -6,67 +6,135 @@
 
 #include "avl_core.h"
 
+/*
+ * Function: make_tree_from_node
+ * -----------------------------
+ * Description:
+ * Creates a new tree from a pre-existing node.
+ *
+ * Arguments: node - The pre-existing node.
+ * 
+ * Returns: Pointer to the newly created tree.
+ */
+AvlTree * make_tree_from_node(Node *node){
+  // Allocate space for the new tree.
+  AvlTree *tree = (AvlTree *)malloc(sizeof(AvlTree));
+  if(tree == NULL){
+    // Memory allocation failed, report.
+    printf("Memory allocation failed while generating a new tree from a node.\n");
+    return NULL;
+  }
+  if(node == NULL){
+    // NULL argument, report illegal state.
+    printf("Illegal argument state in make_tree_from_node.\n");
+    return NULL; 
+  }
+
+  tree->root = NULL;
+  tree->height = 0;
+  tree->number_of_nodes = 1;
+  return tree;
+}
 
 /*
- * Function: search_key
- * --------------------
+ * Function: make_tree_empty
+ * -------------------------
  * Description:
- * Searches a node in a tree, according to 
- * its order key. If the key is found, return
- * one, if not, return 0. The function takes
- * a node-pointer as an argument and assigns
- * it the node, if it was found. If not, the
- * Pointer will point to the parent node, of 
- * where the node would have been.
+ * Create and allocate a new tree, containing no
+ * nodes.
+ * 
+ * Arguments: none
  *
- * Arguments: tree - The AVL tree to search.
- *            key  - The order key of the to-search node
- *            node - The pointer to the node.
- *
- * Returns:   1    - If node found.
- *            0    - If node not found.
- *            -1   - Fatal error.
+ * Returns: Pointer to the newly created tree.
  */
-int search_key(AvlTree *tree, int key, Node *node){
-  // Safety-check for existence of the tree.
-  if(tree == NULL || tree->root == NULL){
+AvlTree * make_tree_empty(){
+  // Allocate memory.
+  AvlTree *new_tree = (AvlTree *)malloc(sizeof(AvlTree));
+  if(new_tree == NULL){
+    // Failed memory allocation. Report.
+    printf("Memory allocation failed in empty tree genertaion.\n");
+    return NULL;
+  }
+  new_tree->root = NULL;
+  new_tree->height = -1;
+  new_tree->number_of_nodes = 0;
+
+  return new_tree;
+}
+
+/*
+ * Function: make_node_empty
+ * -------------------------
+ * Description: 
+ * This function creates and allocates memory for 
+ * a new node, containing no data. It takes a key
+ * argument.
+ *
+ * Arguments: key - The order key the node has.
+ * 
+ * Returns: Node pointer to the new node.
+ */
+Node * make_node_empty(int key){
+  // Allocate memory for the new node.
+  Node *new_node = (Node *)malloc(sizeof(Node));
+  if(new_node == NULL){
+    // Check if memory allocation succeeded.
+    printf("Memory allocation failed while generating a new empty node.\n");
+    return NULL;
+  }
+  new_node->data = NULL;
+  new_node->key = key;
+  new_node->left_child = NULL;
+  new_node->right_child = NULL;
+  new_node->balance = 0;
+  return new_node;
+}
+
+/*
+ * Function: search_node
+ * ---------------------
+ * Description:
+ * Search for a node in the tree. If the node is found,
+ * return a truthy and a pointer to the node-location.
+ * If not, return a falsey and point to the node which
+ * would represent it's parent, if it were in the tree
+ * (this is used for node insertion in to the tree.)
+ *
+ * Arguments: key  - order key to search for.
+ *            node - will point to node in question.
+ *            tree - The tree to search in.
+ * 
+ * Returns: 1  - If node has been found.
+ *          0  - If the node was not found.
+ *          -1 - Fatal error.
+ */
+int search_node(int key, AvlTree *tree, Node **node){
+  // Check if the tree is empty.
+  if(tree->root == NULL){
+    // Return a NULL-pointer on the node, and falsy.
+    *node = NULL;
     return 0;
   }
-  // If the tree exists, continue here.
 
-  // Pointer to the "active" node in the search.
-  Node *active = tree->root; // (Start at root).
-
-  // Iterate over the tree.
+  // Start traversing the tree.
+  *node = tree->root;
   while(true){
-    // Compare the key to the one of active.
-    if(key < active->key){
-      // The key would be to the left of active.
-      if(active->left_child == NULL){
-	// The tree does not contain the key.
-	node = active; // Return the parent.
+    if(key < (*node)->key){
+      // Continue search to the left of the node.
+      if((*node)->left_child == NULL){
+	// Node not in tree, return.
 	return 0;
       }
-      // Continue iteration.
-      active = active->left_child;
-    }else if(key > active->key){
-      // The key would be to the right of active.
-      if(active->right_child == NULL){
-	// The tree does not contain the key.
-	node = active; // Return the parent.
-	return 0;
-      }
-      // Continue iteration.
-      active = active->right_child;
+      // Continue traversal.
+      *node = (*node)->left_child;
+    }else if(key > (*node)->key){
+      // Continue search to the right of the node.
+      
     }else{
-      // The active node contains the key!
-      node = active; // Return active.
+      // Found the node, return.
       return 1;
     }
   }
-
-  // Safety fall-thru. Returns on fatal error.
-  return -1;
 }
 
 /*
