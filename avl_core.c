@@ -129,12 +129,84 @@ int search_node(int key, AvlTree *tree, Node **node){
       *node = (*node)->left_child;
     }else if(key > (*node)->key){
       // Continue search to the right of the node.
-      
+      if((*node)->right_child == NULL){
+	// Node is not in tree, return.
+	return 0;
+      }
+      // Continue traversal.
+      *node = (*node)->right_child;
     }else{
       // Found the node, return.
       return 1;
     }
   }
+
+  // Safety fall-thru. This should not return.
+  return -1; // Fatal error if returned.
+}
+
+/*
+ * Function: insert_node_key
+ * -------------------------
+ * Description:
+ * Insert a node in to the tree (if it does not
+ * exist already) according to its order key.
+ * The node will initially not contain any data.
+ * 
+ * Arguments: key  - The order key to use.
+ *            tree - The tree to insert into.
+ *
+ * Returns: 1  - On successful insertion.
+ *          0  - If insertion failed.
+ *          -1 - Fatal error.
+ */
+int insert_node_key(int key, AvlTree *tree){
+  // Pointer to the insertion-location.
+  Node *parent = NULL;
+  // Search for the node, resp. the parent.
+  int response = search_node(key, tree, &parent);
+
+  if(response == 0){
+    Node *new_node = make_node_empty(key);
+    if(new_node == NULL){
+      // Error in allocation.
+      return -1;
+    }
+
+    if(parent == NULL){
+      // The tree has no root yet, make it the new node.
+      tree->root = new_node;
+      tree->number_of_nodes++;
+      return 1;
+    }else if(key < parent->key){
+      if(parent->left_child){
+	printf("Tried insertion with non-empty child position in parent.\n");
+	return -1;
+      }
+      parent->left_child = new_node;
+      tree->number_of_nodes++;
+      return 1;
+    }else if(key > parent->key){
+      if(parent->right_child){
+	printf("Tried insertion with non-empty child position in parent.\n");
+	return -1;
+      }
+      parent->right_child = new_node;
+      tree->number_of_nodes++;
+      return 1;
+    }
+    // This should not return.
+    return -1;
+  }else if(response == -1){
+    // Error in search, propagate it.
+    return -1;
+  }else{
+    // Key already in tree, return 0.
+    return 0;
+  }
+
+  // Safety fall-thru. This should never return.
+  return -1; // Fatal error if returned.
 }
 
 /*

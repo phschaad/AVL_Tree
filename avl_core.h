@@ -125,6 +125,23 @@ Node * make_node_empty(int key);
 int search_node(int key, AvlTree *tree, Node **node);
 
 /*
+ * Function: insert_node_key
+ * -------------------------
+ * Description:
+ * Insert a node in to the tree (if it does not
+ * exist already) according to its order key.
+ * The node will initially not contain any data.
+ * 
+ * Arguments: key  - The order key to use.
+ *            tree - The tree to insert into.
+ *
+ * Returns: 1  - On successful insertion.
+ *          0  - If insertion failed.
+ *          -1 - Fatal error.
+ */
+int insert_node_key(int key, AvlTree *tree);
+
+/*
  * Function: traverse_inorder_console
  * ----------------------------------
  * Description:
