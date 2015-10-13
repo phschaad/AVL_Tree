@@ -4,8 +4,8 @@
  * Creation Date: 011015 
  */
 
-#ifndef _AVL_CORE_H_
-#define _AVL_CORE_H_
+#ifndef __AVL_CORE_H_
+#define __AVL_CORE_H_
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -75,7 +75,7 @@ typedef struct avl_tree_s {
  * 
  * Returns: Pointer to the newly created tree.
  */
-AvlTree * make_tree_from_node(Node *node);
+extern AvlTree * make_tree_from_node(Node *node);
 
 /*
  * Function: make_tree_empty
@@ -88,7 +88,7 @@ AvlTree * make_tree_from_node(Node *node);
  *
  * Returns: Pointer to the newly created tree.
  */
-AvlTree * make_tree_empty();
+extern AvlTree * make_tree_empty();
 
 /*
  * Function: make_node_empty
@@ -102,7 +102,7 @@ AvlTree * make_tree_empty();
  * 
  * Returns: Node pointer to the new node.
  */
-Node * make_node_empty(int key);
+extern Node * make_node_empty(int key);
 
 /*
  * Function: search_node
@@ -122,7 +122,7 @@ Node * make_node_empty(int key);
  *          0  - If the node was not found.
  *          -1 - Fatal error.
  */
-int search_node(int key, AvlTree *tree, Node **node);
+extern int search_node(int key, AvlTree *tree, Node **node);
 
 /*
  * Function: insert_node_key
@@ -139,7 +139,7 @@ int search_node(int key, AvlTree *tree, Node **node);
  *          0  - If insertion failed.
  *          -1 - Fatal error.
  */
-int insert_node_key(int key, AvlTree *tree);
+extern int insert_node_key(int key, AvlTree *tree);
 
 /*
  * Function: traverse_inorder_console
@@ -153,7 +153,7 @@ int insert_node_key(int key, AvlTree *tree);
  * 
  * Returns: void
  */
-void traverse_inorder_console(Node *node);
+extern void traverse_inorder_console(Node *node);
 
 /*
  * Function: travere_postorder_console
@@ -167,7 +167,7 @@ void traverse_inorder_console(Node *node);
  * 
  * Returns: void
  */
-void traverse_postorder_console(Node *node);
+extern void traverse_postorder_console(Node *node);
 
 /*
  * Function: travere_preorder_console
@@ -181,6 +181,6 @@ void traverse_postorder_console(Node *node);
  * 
  * Returns: void
  */
-void traverse_preorder_console(Node *node);
+extern void traverse_preorder_console(Node *node);
 
-#endif /*  _AVL_CORE_H_ */
+#endif /*  __AVL_CORE_H_ */
