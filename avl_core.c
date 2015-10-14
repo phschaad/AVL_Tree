@@ -109,6 +109,24 @@ Node * make_node_empty(int key){
 }
 
 /*
+ * Function: upin
+ * --------------
+ * Description:
+ * This method is called after insertion of a node
+ * and walks up the tree from the freshly inserted
+ * node, checking the avl condition on every point.
+ * If the AVL condition is violated at a point, it
+ * calls the corresponding rotations to fix it.
+ *
+ * Arguments: node - The node from which upin is called. 
+ * 
+ * Returns: void 
+ */
+void upin(Node *node){
+
+}
+
+/*
  * Function: search_by_key
  * -------------------------
  * Description:
@@ -262,18 +280,53 @@ int key_insert_new(int key, AvlTree *tree){
  * Returns: void
  */
 void visualize(AvlTree *tree){
+  // Check arguments.
   assert(tree != NULL);
 
+  // Total number of layers in the tree.
   int layers = tree->height + 1;
 
+  // Figure out the maximum possible ammount of nodes.
   int max_n_nodes = 0;
   for(int i = 0; i < layers; i++){
     max_n_nodes += pow(2, i);
   }
 
+  // Fill the node list with all -1. 
   int node_list[max_n_nodes];
+  for(int i = 0; i < max_n_nodes; i++){
+    node_list[i] = -1;
+  }
 
-  
+  // Assemble the node list from the tree.
+  assemble_node_list(tree->root, node_list, 1);
+
+  // Iterate through list, printing it out in tree format.
+  int level = 0;
+  int max = 1;
+  int max_prev = 0;
+  for(int i = 0; i < max_n_nodes; i++){
+    // Print whitespaces to make the tree more readable.
+    for(int j = 0; j < (tree->height + 1 - level); j++){
+      printf(" ");
+    }
+    
+    if(node_list[i] == -1){
+      // -1 means no node, so print x.
+      printf("x ");
+    }else{
+      // Print key of the node at that index.
+      printf("%d ", node_list[i]);
+    }
+
+    // Start a new line after a level is complete.
+    if(!(i < (max - 1))){
+      printf("\n");
+      level++;
+      max_prev = max;
+      max = pow(2, level) + max_prev;
+    }
+  }
 }
 
 /*
@@ -281,15 +334,31 @@ void visualize(AvlTree *tree){
  * ----------------------------
  * Description:
  * Build an array containing all the nodes of the avl
- * tree.
+ * tree. (Recursively)
  * 
- * Arguments: tree - the tree to take the nodes from
+ * Arguments: node - currently active node in recursion.
  *            list - the list to fill. 
+ *            t_index - index of the current node in the tree.
  * 
  * Returns: void
  */
-extern void assemble_node_list(AvlTree *tree, int **list){
+void assemble_node_list(Node *node, int *list, int t_index){
+  // Check arguments
+  assert(node != NULL);
+  assert(list != NULL);
 
+  // Put the key of the current node at the correct poistion.
+  list[t_index - 1] = node->key;
+
+  // Repeat for left child if it exists.
+  if(node->left_child){
+    assemble_node_list(node->left_child, list, t_index * 2);
+  }
+
+  // Repeat for right child if it exists.
+  if(node->right_child){
+    assemble_node_list(node->right_child, list, (t_index * 2) + 1);
+  }
 }
 
 /*

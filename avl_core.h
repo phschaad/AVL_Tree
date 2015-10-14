@@ -167,14 +167,15 @@ extern void visualize(AvlTree *tree);
  * ----------------------------
  * Description:
  * Build an array containing all the nodes of the avl
- * tree.
+ * tree. (Recursively)
  * 
- * Arguments: tree - the tree to take the nodes from
+ * Arguments: node - currently active node in recursion.
  *            list - the list to fill. 
+ *            t_index - index of the current node in the tree.
  * 
  * Returns: void
  */
-extern void assemble_node_list(AvlTree *tree, int **list);
+extern void assemble_node_list(Node *node, int *list, int t_index);
 
 /*
  * Function: traverse_inorder_console
