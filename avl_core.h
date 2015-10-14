@@ -115,6 +115,22 @@ extern AvlTree * make_tree_empty();
 extern Node * make_node_empty(int key);
 
 /*
+ * Function: upin
+ * --------------
+ * Description:
+ * This method is called after insertion of a node
+ * and walks up the tree from the freshly inserted
+ * node, checking the avl condition on every point.
+ * If the AVL condition is violated at a point, it
+ * calls the corresponding rotations to fix it.
+ *
+ * Arguments: node - The node from which upin is called. 
+ * 
+ * Returns: void 
+ */
+extern void upin(Node *node);
+
+/*
  * Function: search_by_key
  * -----------------------
  * Description:
