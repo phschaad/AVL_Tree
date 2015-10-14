@@ -2,13 +2,22 @@
 /*
  * Author: Philipp Schaad
  * Creation Date: 011015 
+ * 
+ * Description:
+ * This is the core module of an AVL-Tree implementation.
+ * This module provides:
+ *     - Basic AVL-Tree structure
+ *     - Insertion, Deletion and Lookup in AVL-Tree
+ *     - Traversal and visualization of AVL-Tree(s).
+ *
+ * Exit Code Index:
+ *     > 0:  Successful Execution.
+ *     > 1:  Memory Allocation Failure.
+ *     > 2:  Critical Error in core functions. 
  */
 
 #ifndef __AVL_CORE_H_
 #define __AVL_CORE_H_
-
-#include <stdio.h>
-#include <stdlib.h>
 
 /*
  * -----------------------------
@@ -34,14 +43,15 @@ typedef enum {
  *
  * Fields: key - Used for ordering. Holds order of the node.
  *         data - Pointer to the actual data stored in the node.
+ *         height - Holds the height value of the node.
  *         left-child - Pointer to the left child node of the node.
  *         right-child - Pointer to the right child node of the node.
- *         balance - Holds the current balance factor of the node.
+ *         parent - Pointer to the parent node of the node.
  */
 typedef struct tree_node_s {
-  int key, balance;
+  int key, height;
   void *data;
-  struct tree_node_s *left_child, *right_child;
+  struct tree_node_s *left_child, *right_child, *parent;
 } Node;
 
 /*
@@ -105,14 +115,13 @@ extern AvlTree * make_tree_empty();
 extern Node * make_node_empty(int key);
 
 /*
- * Function: search_node
- * ---------------------
+ * Function: search_by_key
+ * -----------------------
  * Description:
  * Search for a node in the tree. If the node is found,
  * return a truthy and a pointer to the node-location.
  * If not, return a falsey and point to the node which
- * would represent it's parent, if it were in the tree
- * (this is used for node insertion in to the tree.)
+ * would represent it's parent, if it were in the tree.
  *
  * Arguments: key  - order key to search for.
  *            node - will point to node in question.
@@ -120,13 +129,12 @@ extern Node * make_node_empty(int key);
  * 
  * Returns: 1  - If node has been found.
  *          0  - If the node was not found.
- *          -1 - Fatal error.
  */
-extern int search_node(int key, AvlTree *tree, Node **node);
+extern int search_by_key(int key, AvlTree *tree, Node **node);
 
 /*
- * Function: insert_node_key
- * -------------------------
+ * Function: key_insert_new
+ * ------------------------
  * Description:
  * Insert a node in to the tree (if it does not
  * exist already) according to its order key.
@@ -137,9 +145,36 @@ extern int search_node(int key, AvlTree *tree, Node **node);
  *
  * Returns: 1  - On successful insertion.
  *          0  - If insertion failed.
- *          -1 - Fatal error.
  */
-extern int insert_node_key(int key, AvlTree *tree);
+extern int key_insert_new(int key, AvlTree *tree);
+
+/*
+ * Function: visualize
+ * -------------------
+ * Description:
+ * Visualize a binary search tree by printing it
+ * to the console in layers representing each in-
+ * dividual height-layer of the tree.
+ * 
+ * Arguments: tree - The avl tree to visualize.
+ *
+ * Returns: void
+ */
+extern void visualize(AvlTree *tree);
+
+/*
+ * Function: assemble_node_list
+ * ----------------------------
+ * Description:
+ * Build an array containing all the nodes of the avl
+ * tree.
+ * 
+ * Arguments: tree - the tree to take the nodes from
+ *            list - the list to fill. 
+ * 
+ * Returns: void
+ */
+extern void assemble_node_list(AvlTree *tree, int **list);
 
 /*
  * Function: traverse_inorder_console
@@ -182,5 +217,19 @@ extern void traverse_postorder_console(Node *node);
  * Returns: void
  */
 extern void traverse_preorder_console(Node *node);
+
+/*
+ * Function: max
+ * -------------
+ * Description:
+ * Simple helper function to determine the max of two
+ * Integer numbers.
+ *
+ * Arguments: a - first value.
+ *            b - second value.
+ *
+ * Returns: the maximum of the two.
+ */
+extern int max(int a, int b);
 
 #endif /*  __AVL_CORE_H_ */

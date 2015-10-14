@@ -2,9 +2,26 @@
 /*
  * Author: Philipp Schaad
  * Creation Date: 011015 
+ * 
+ * Description:
+ * This is the core module of an AVL-Tree implementation.
+ * This module provides:
+ *     - Basic AVL-Tree structure
+ *     - Insertion, Deletion and Lookup in AVL-Tree
+ *     - Traversal and visualization of AVL-Tree(s).
+ *
+ * Exit Code Index:
+ *     > 0:  Successful Execution.
+ *     > 1:  Memory Allocation Failure.
+ *     > 2:  Critical Error in core functions. 
  */
 
 #include "avl_core.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <math.h>
 
 /*
  * Function: make_tree_from_node
@@ -17,20 +34,19 @@
  * Returns: Pointer to the newly created tree.
  */
 AvlTree * make_tree_from_node(Node *node){
+  // Check arguments.
+  assert(node != NULL);
+  
   // Allocate space for the new tree.
   AvlTree *tree = (AvlTree *)malloc(sizeof(AvlTree));
   if(tree == NULL){
-    // Memory allocation failed, report.
-    printf("Memory allocation failed while generating a new tree from a node.\n");
-    return NULL;
-  }
-  if(node == NULL){
-    // NULL argument, report illegal state.
-    printf("Illegal argument state in make_tree_from_node.\n");
-    return NULL; 
+    // Memory allocation failed, report and exit.
+    printf("Memory allocation failed while creating a new tree from a node.\n");
+    exit(1); // Throw memory allocation error.
   }
 
-  tree->root = NULL;
+  tree->root = node; // Assign root.
+  // Set the correct tree atributes.
   tree->height = 0;
   tree->number_of_nodes = 1;
   return tree;
@@ -51,14 +67,15 @@ AvlTree * make_tree_empty(){
   // Allocate memory.
   AvlTree *new_tree = (AvlTree *)malloc(sizeof(AvlTree));
   if(new_tree == NULL){
-    // Failed memory allocation. Report.
-    printf("Memory allocation failed in empty tree genertaion.\n");
-    return NULL;
+    // Memory allocation failed, report and exit.
+    printf("Memory allocation failed while creating an empty tree.\n");
+    exit(1); // Throw memory allocation error.
   }
-  new_tree->root = NULL;
-  new_tree->height = -1;
-  new_tree->number_of_nodes = 0;
 
+  // Set the correct tree attributes.
+  new_tree->root = NULL;
+  new_tree->height = -1; // Represents an empty tree.
+  new_tree->number_of_nodes = 0;
   return new_tree;
 }
 
@@ -78,27 +95,27 @@ Node * make_node_empty(int key){
   // Allocate memory for the new node.
   Node *new_node = (Node *)malloc(sizeof(Node));
   if(new_node == NULL){
-    // Check if memory allocation succeeded.
+    // Memory allocation failed, report and exit.
     printf("Memory allocation failed while generating a new empty node.\n");
-    return NULL;
+    exit(1); // Throw memory allocation error. 
   }
-  new_node->data = NULL;
+
+  // Set correct node attributes (for empty node).
   new_node->key = key;
-  new_node->left_child = NULL;
-  new_node->right_child = NULL;
-  new_node->balance = 0;
+  new_node->data = NULL;
+  new_node->left_child = new_node->right_child = new_node->parent = NULL;
+  new_node->height = 0;
   return new_node;
 }
 
 /*
- * Function: search_node
- * ---------------------
+ * Function: search_by_key
+ * -------------------------
  * Description:
  * Search for a node in the tree. If the node is found,
  * return a truthy and a pointer to the node-location.
  * If not, return a falsey and point to the node which
- * would represent it's parent, if it were in the tree
- * (this is used for node insertion in to the tree.)
+ * would represent it's parent, if it were in the tree.
  *
  * Arguments: key  - order key to search for.
  *            node - will point to node in question.
@@ -106,9 +123,12 @@ Node * make_node_empty(int key){
  * 
  * Returns: 1  - If node has been found.
  *          0  - If the node was not found.
- *          -1 - Fatal error.
  */
-int search_node(int key, AvlTree *tree, Node **node){
+int search_by_key(int key, AvlTree *tree, Node **node){
+  // Check arguments.
+  assert(tree != NULL);
+  assert(node != NULL);
+  
   // Check if the tree is empty.
   if(tree->root == NULL){
     // Return a NULL-pointer on the node, and falsy.
@@ -141,13 +161,14 @@ int search_node(int key, AvlTree *tree, Node **node){
     }
   }
 
-  // Safety fall-thru. This should not return.
-  return -1; // Fatal error if returned.
+  // This should be unreachable code. Error if reached.
+  printf("Critical error occured while searching for a node.\n");
+  exit(2); // Exit with code 2. See Error index for details.
 }
 
 /*
- * Function: insert_node_key
- * -------------------------
+ * Function: key_insert_new
+ * ------------------------
  * Description:
  * Insert a node in to the tree (if it does not
  * exist already) according to its order key.
@@ -158,55 +179,117 @@ int search_node(int key, AvlTree *tree, Node **node){
  *
  * Returns: 1  - On successful insertion.
  *          0  - If insertion failed.
- *          -1 - Fatal error.
  */
-int insert_node_key(int key, AvlTree *tree){
-  // Pointer to the insertion-location.
-  Node *parent = NULL;
-  // Search for the node, resp. the parent.
-  int response = search_node(key, tree, &parent);
+int key_insert_new(int key, AvlTree *tree){
+  assert(tree != NULL); // Check arguments.
 
-  if(response == 0){
-    Node *new_node = make_node_empty(key);
-    if(new_node == NULL){
-      // Error in allocation.
-      return -1;
-    }
-
-    if(parent == NULL){
-      // The tree has no root yet, make it the new node.
-      tree->root = new_node;
-      tree->number_of_nodes++;
-      return 1;
-    }else if(key < parent->key){
-      if(parent->left_child){
-	printf("Tried insertion with non-empty child position in parent.\n");
-	return -1;
-      }
-      parent->left_child = new_node;
-      tree->number_of_nodes++;
-      return 1;
-    }else if(key > parent->key){
-      if(parent->right_child){
-	printf("Tried insertion with non-empty child position in parent.\n");
-	return -1;
-      }
-      parent->right_child = new_node;
-      tree->number_of_nodes++;
-      return 1;
-    }
-    // This should not return.
-    return -1;
-  }else if(response == -1){
-    // Error in search, propagate it.
-    return -1;
+  // The new node.
+  Node *new_node = make_node_empty(key);
+  
+  if(tree->root == NULL){
+    // Tree is empty, make the new node the root.
+    tree->root = new_node;
+    new_node->parent = NULL;
+    // Adapt the height of the tree.
+    tree->height = 0;
+    // Increment number of nodes in tree.
+    tree->number_of_nodes++;
+    return 1;
   }else{
-    // Key already in tree, return 0.
-    return 0;
+    // Traverse the tree.
+    // active keeps track of the current traversal "index".
+    Node *active = tree->root;
+    // Keeps track of the current traversal depth.
+    int n_height = 0; 
+    
+    while(true){
+      if(key < active->key){
+	// New node is expected to left of active.
+	if(active->left_child == NULL){
+	  // Insert to the left of active.
+	  active->left_child = new_node;
+	  new_node->parent = active;
+	  n_height++; // Increment the new height.
+	  // Check if hight needs to be updated, if yes do it.
+	  tree->height = max(tree->height, n_height);
+	  // Increase number of nodes in tree.
+	  tree->number_of_nodes++;
+	  return 1;
+	}
+
+	// Continue traversal.
+	n_height++;
+	active = active->left_child;
+      }else if(key > active->key){
+	// New node is expected to right of active.
+	if(active->right_child == NULL){
+	  // Insert to the right of active.
+	  active->right_child = new_node;
+	  new_node->parent = active;
+	  n_height++; // Increment the new height.
+	  // Check if hight needs to be updated, if yes, do it.
+	  tree->height = max(tree->height, n_height);
+	  // Increase number of nodes in tree.
+	  tree->number_of_nodes++;
+	  return 1;
+	}
+
+	// Continue traversal.
+	n_height++;
+	active = active->right_child; 
+      }else{
+	// Key already exists in tree. Insertion failure.
+	return 0;
+      }
+    }
   }
 
-  // Safety fall-thru. This should never return.
-  return -1; // Fatal error if returned.
+  // This should be unreachable code. Error if reached.
+  printf("Critical error occured while inserting a new node.\n");
+  exit(2); // Exit with code 2. See Error index for details.
+}
+
+/*
+ * Function: visualize
+ * -------------------
+ * Description:
+ * Visualize a binary search tree by printing it
+ * to the console in layers representing each in-
+ * dividual height-layer of the tree.
+ * 
+ * Arguments: tree - The avl tree to visualize.
+ *
+ * Returns: void
+ */
+void visualize(AvlTree *tree){
+  assert(tree != NULL);
+
+  int layers = tree->height + 1;
+
+  int max_n_nodes = 0;
+  for(int i = 0; i < layers; i++){
+    max_n_nodes += pow(2, i);
+  }
+
+  int node_list[max_n_nodes];
+
+  
+}
+
+/*
+ * Function: assemble_node_list
+ * ----------------------------
+ * Description:
+ * Build an array containing all the nodes of the avl
+ * tree.
+ * 
+ * Arguments: tree - the tree to take the nodes from
+ *            list - the list to fill. 
+ * 
+ * Returns: void
+ */
+extern void assemble_node_list(AvlTree *tree, int **list){
+
 }
 
 /*
@@ -270,4 +353,20 @@ void traverse_preorder_console(Node *node){
     traverse_preorder_console(node->left_child);
     traverse_preorder_console(node->right_child);
   }
+}
+
+/*
+ * Function: max
+ * -------------
+ * Description:
+ * Simple helper function to determine the max of two
+ * Integer numbers.
+ *
+ * Arguments: a - first value.
+ *            b - second value.
+ *
+ * Returns: the maximum of the two.
+ */
+int max(int a, int b){
+  return (a > b) ? a : b;
 }

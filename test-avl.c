@@ -1,17 +1,21 @@
 #include "avl_core.h"
 
+#include <stdio.h>
+
 int main(int argc, char **argv){
   AvlTree *tree = make_tree_empty();
 
-  insert_node_key(3, tree);
-  insert_node_key(5, tree);
-  insert_node_key(6, tree);
-  insert_node_key(1, tree);
-  insert_node_key(2, tree);
-  insert_node_key(9, tree);
+  key_insert_new(3, tree);
+  key_insert_new(5, tree);
+  key_insert_new(6, tree);
+  key_insert_new(1, tree);
+  key_insert_new(2, tree);
+  key_insert_new(9, tree);
 
-  traverse_inorder_console(tree->root);
+  traverse_preorder_console(tree->root);
   printf("\nNumber of nodes: %d\n", tree->number_of_nodes);
-
+  printf("Number of levels: %d\n", tree->height + 1);
+  visualize(tree);
+  
   return 0;
 }
