@@ -1,4 +1,5 @@
 #include "avl_core.h"
+#include "avl_visualizer.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,19 +12,13 @@ int rand_in_range(int min, int max){
 int main(int argc, char **argv){
   AvlTree *tree = make_tree_empty();
   
-  /* srand(time(NULL)); */
-  /* for(int i = 0; i < 50; i++){ */
-  /*   int r = rand_in_range(1, 150); */
-  /*   key_insert_new(r, tree); */
-  /* } */
+  srand(time(NULL));
+  // 17
+  for(int i = 0; i < 30; i++){
+    int r = rand_in_range(1, 999);
+    key_insert_new(r, tree);
+  }
   
-  key_insert_new(3, tree);
-  key_insert_new(5, tree);
-  key_insert_new(6, tree);
-  key_insert_new(1, tree);
-  key_insert_new(2, tree);
-  key_insert_new(9, tree);
-
   printf("Preorder traversal: ");
   traverse_preorder_console(tree->root);
   printf("\nInorder traversal: ");

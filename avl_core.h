@@ -26,15 +26,6 @@
  */
 
 /*
- * Defining booleans, for simpler handling of
- * true/false operations. Just a helper.
- */
-typedef enum {
-  false,
-  true
-} bool; // Going off convention with capitalization for convenience.
-
-/*
  * Structure: tree_node_s
  * ----------------------
  * Description:
@@ -173,34 +164,6 @@ extern void rotate_right(AvlTree *tree, Node *node);
 extern void rotate_left(AvlTree *tree, Node *node);
 
 /*
- * Function: rotate_right_left
- * ---------------------------
- * Description:
- * Execute a double (right-left) rotation around a
- * node.
- *
- * Arguments: node - The node to rotate.
- *            tree - The tree opearting in.
- *
- * Retruns: void
- */
-extern void rotate_right_left(AvlTree *tree, Node *node);
-
-/*
- * Function: rotate_left_right
- * ---------------------------
- * Description:
- * Execute a double (left-right) rotation around a
- * node. 
- *
- * Arguments: node - The node to rotate.
- *            tree - The tree operating in.
- * 
- * Returns: void
- */
-extern void rotate_left_right(AvlTree *tree, Node *node);
-
-/*
  * Function: search_by_key
  * -----------------------
  * Description:
@@ -251,77 +214,6 @@ extern int key_insert_new(int key, AvlTree *tree);
  *          0 - Deletion unsuccessful (key not found).
  */
 extern int key_delete(int key, AvlTree *tree);
-
-/*
- * Function: visualize
- * -------------------
- * Description:
- * Visualize a binary search tree by printing it
- * to the console in layers representing each in-
- * dividual height-layer of the tree.
- * 
- * Arguments: tree - The avl tree to visualize.
- *
- * Returns: void
- */
-extern void visualize(AvlTree *tree);
-
-/*
- * Function: assemble_node_list
- * ----------------------------
- * Description:
- * Build an array containing all the nodes of the avl
- * tree. (Recursively)
- * 
- * Arguments: node - currently active node in recursion.
- *            list - the list to fill. 
- *            t_index - index of the current node in the tree.
- * 
- * Returns: void
- */
-extern void assemble_node_list(Node *node, int *list, int t_index);
-
-/*
- * Function: traverse_inorder_console
- * ----------------------------------
- * Description:
- * This function does a (recursive) inorder traversal
- * of the AVL-Tree. The ouput is console-based, being
- * displayed as a one-line string.
- * 
- * Arguments: node - The node the recursion is at.
- * 
- * Returns: void
- */
-extern void traverse_inorder_console(Node *node);
-
-/*
- * Function: travere_postorder_console
- * -----------------------------------
- * Description:
- * This function does a (recursive) postorder traversal
- * of the AVL-Tree. The ouput is console-based, being
- * displayed as a one-line string.
- * 
- * Arguments: node - The node the recursion is at.
- * 
- * Returns: void
- */
-extern void traverse_postorder_console(Node *node);
-
-/*
- * Function: travere_preorder_console
- * ----------------------------------
- * Description:
- * This function does a (recursive) preorder traversal
- * of the AVL-Tree. The ouput is console-based, being
- * displayed as a one-line string.
- * 
- * Arguments: node - The node the recursion is at.
- * 
- * Returns: void
- */
-extern void traverse_preorder_console(Node *node);
 
 /*
  * Function: max

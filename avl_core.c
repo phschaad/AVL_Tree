@@ -21,7 +21,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <math.h>
 
 /*
  * Function: make_tree_from_node
@@ -158,7 +157,8 @@ void upin(AvlTree *tree, Node *node){
 	// TODO: update balance?
       }else if(bal == 1){
 	// Do a double rotation (left, right).
-	rotate_left_right(tree, parent);
+	rotate_left(tree, parent->left_child);
+	rotate_right(tree, parent);
 	
 	// TODO: update balance?
       }else{
@@ -186,7 +186,8 @@ void upin(AvlTree *tree, Node *node){
 	// TODO: update balance?
       }else if(bal == -1){
 	// Do a double rotation (right, left).
-	rotate_right_left(tree, parent);
+	rotate_right(tree, parent->right_child);
+	rotate_left(tree, parent);
 
 	// TODO: update balance?
       }else{
@@ -320,50 +321,6 @@ void rotate_left(AvlTree *tree, Node *node){
 }
 
 /*
- * Function: rotate_right_left
- * ---------------------------
- * Description:
- * Execute a double (right-left) rotation around a
- * node.
- *
- * Arguments: node - The node to rotate.
- *            tree - The tree opearting in.
- *
- * Retruns: void
- */
-void rotate_right_left(AvlTree *tree, Node *node){
-  // Check arguments.
-  assert(tree != NULL);
-  assert(node != NULL);
-
-  // Do the double rotation.
-  rotate_right(tree, node->right_child);
-  rotate_left(tree, node);
-}
-
-/*
- * Function: rotate_left_right
- * ---------------------------
- * Description:
- * Execute a double (left-right) rotation around a
- * node. 
- *
- * Arguments: node - The node to rotate.
- *            tree - The tree operating in.
- * 
- * Returns: void
- */
-void rotate_left_right(AvlTree *tree, Node *node){
-  // Check arguments.
-  assert(tree != NULL);
-  assert(node != NULL);
-
-  // Do the double rotation.
-  rotate_left(tree, node->left_child);
-  rotate_right(tree, node);
-}
-
-/*
  * Function: search_by_key
  * -------------------------
  * Description:
@@ -393,7 +350,7 @@ int search_by_key(int key, AvlTree *tree, Node **node){
 
   // Start traversing the tree.
   *node = tree->root;
-  while(true){
+  while(1){
     if(key < (*node)->key){
       // Continue search to the left of the node.
       if((*node)->left_child == NULL){
@@ -460,7 +417,7 @@ int key_insert_new(int key, AvlTree *tree){
     // Keeps track of the current traversal depth.
     int n_height = 0;
     
-    while(true){
+    while(1){
       if(key < active->key){
 	// New node is expected to left of active.
 	if(active->left_child == NULL){
@@ -531,170 +488,9 @@ int key_insert_new(int key, AvlTree *tree){
  */
 int key_delete(int key, AvlTree *tree){
   // Check arguments.
-  assert(tree != NULL); 
-}
-
-/*
- * Function: visualize
- * -------------------
- * Description:
- * Visualize a binary search tree by printing it
- * to the console in layers representing each in-
- * dividual height-layer of the tree.
- * 
- * Arguments: tree - The avl tree to visualize.
- *
- * Returns: void
- */
-void visualize(AvlTree *tree){
-  // Check arguments.
   assert(tree != NULL);
 
-  // Total number of layers in the tree.
-  int layers = tree->height + 1;
-
-  // Figure out the maximum possible ammount of nodes.
-  int max_n_nodes = 0;
-  for(int i = 0; i < layers; i++){
-    max_n_nodes += pow(2, i);
-  }
-
-  // Fill the node list with all -1. 
-  int node_list[max_n_nodes];
-  for(int i = 0; i < max_n_nodes; i++){
-    node_list[i] = -1;
-  }
-
-  // Assemble the node list from the tree.
-  assemble_node_list(tree->root, node_list, 1);
-
-  // Iterate through list, printing it out in tree format.
-  int level = 0;
-  int max = 1;
-  int max_prev = 0;
-  for(int i = 0; i < tree->height + 1; i++){
-    printf("   "); // 3x whitespace.
-  }
-  for(int i = 0; i < max_n_nodes; i++){
-    if(node_list[i] == -1){
-      // -1 means no node, so print x.
-      printf(" x "); // print x.
-      printf("   "); // 3x whitespace.
-    }else{
-      // Print key of the node at that index.
-      if(node_list[i] < 100) printf(" ");
-      printf("%d", node_list[i]);
-      if(node_list[i] < 10) printf(" ");
-      printf("   "); // 3x whitespace.
-    }
-
-    // Start a new line after a level is complete.
-    if(!(i < (max - 1))){
-      printf("\n");
-      level++;
-      max_prev = max;
-      max = pow(2, level) + max_prev;
-
-      for(int j = 0; j < (tree->height - level + 1); j++){
-	printf("   "); // 3x whitespace. 
-      }
-    }
-  }
-}
-
-/*
- * Function: assemble_node_list
- * ----------------------------
- * Description:
- * Build an array containing all the nodes of the avl
- * tree. (Recursively)
- * 
- * Arguments: node - currently active node in recursion.
- *            list - the list to fill. 
- *            t_index - index of the current node in the tree.
- * 
- * Returns: void
- */
-void assemble_node_list(Node *node, int *list, int t_index){
-  // Check arguments
-  assert(node != NULL);
-  assert(list != NULL);
-
-  // Put the key of the current node at the correct poistion.
-  list[t_index - 1] = node->key;
-
-  // Repeat for left child if it exists.
-  if(node->left_child){
-    assemble_node_list(node->left_child, list, t_index * 2);
-  }
-
-  // Repeat for right child if it exists.
-  if(node->right_child){
-    assemble_node_list(node->right_child, list, (t_index * 2) + 1);
-  }
-}
-
-/*
- * Function: traverse_inorder_console
- * ----------------------------------
- * Description:
- * This function does a (recursive) inorder traversal
- * of the AVL-Tree. The ouput is console-based, being
- * displayed as a one-line string.
- * 
- * Arguments: node - The node the recursion is at.
- * 
- * Returns: void
- */
-void traverse_inorder_console(Node *node){
-  // Check if the node exists, if yes, do traversal.
-  if(node != NULL){
-    traverse_inorder_console(node->left_child);
-    printf("%d ", node->key);
-    traverse_inorder_console(node->right_child);
-  }
-}
-
-/*
- * Function: travere_postorder_console
- * -----------------------------------
- * Description:
- * This function does a (recursive) postorder traversal
- * of the AVL-Tree. The ouput is console-based, being
- * displayed as a one-line string.
- * 
- * Arguments: node - The node the recursion is at.
- * 
- * Returns: void
- */
-void traverse_postorder_console(Node *node){
-  // Check if node exists, if yes, do traversal.
-  if(node != NULL){
-    traverse_postorder_console(node->left_child);
-    traverse_postorder_console(node->right_child);
-    printf("%d ", node->key);
-  }
-}
-
-/*
- * Function: travere_preorder_console
- * ----------------------------------
- * Description:
- * This function does a (recursive) preorder traversal
- * of the AVL-Tree. The ouput is console-based, being
- * displayed as a one-line string.
- * 
- * Arguments: node - The node the recursion is at.
- * 
- * Returns: void
- */
-void traverse_preorder_console(Node *node){
-  // Check if node exists, if yes, do traversal.
-  if(node != NULL){
-    printf("%d ", node->key);
-    traverse_preorder_console(node->left_child);
-    traverse_preorder_console(node->right_child);
-  }
+  // TODO: Implement
 }
 
 /*
