@@ -141,20 +141,23 @@ void upin(AvlTree *tree, Node *node){
 
   // Figure out the balance of it's parent.
   int p_bal = balance(parent);
-  
+
+  // Check balance for correctness, rotating if necessary.
   if(node->key < parent->key){
     if(p_bal >= 0){
+      // Exit upin if the parent balance is 0.
       return;
     }else if(p_bal == -1){
+      // Continue upin at the parent.
       upin(tree, parent);
     }else if(p_bal < -1){
       if(bal == -1){
+	// Do a single right rotation.
 	rotate_right(tree, parent);
 
 	// TODO: update balance?
-	//bal = balance(parent);
-	//bal = balance(node);
       }else if(bal == 1){
+	// Do a double rotation (left, right).
 	rotate_left_right(tree, parent);
 	
 	// TODO: update balance?
@@ -170,15 +173,19 @@ void upin(AvlTree *tree, Node *node){
     }
   }else{
     if(p_bal <= 0){
+      // Exit upin if the parent balance is 0.
       return;
     }else if(p_bal == 1){
+      // Continue upin at the parent. 
       upin(tree, parent);
     }else if(p_bal > 1){
       if(bal == 1){
+	// Do a single left rotation. 
 	rotate_left(tree, parent);
 	
 	// TODO: update balance?
       }else if(bal == -1){
+	// Do a double rotation (right, left).
 	rotate_right_left(tree, parent);
 
 	// TODO: update balance?
@@ -451,7 +458,7 @@ int key_insert_new(int key, AvlTree *tree){
     // active keeps track of the current traversal "index".
     Node *active = tree->root;
     // Keeps track of the current traversal depth.
-    int n_height = 0; 
+    int n_height = 0;
     
     while(true){
       if(key < active->key){
@@ -507,6 +514,27 @@ int key_insert_new(int key, AvlTree *tree){
 }
 
 /*
+ * Function: key_delete
+ * --------------------
+ * Description:
+ * This function, for a given key, searches the node
+ * with that order key in the given tree and tries
+ * to delete it. If the key could not be found, the
+ * function returns 0, otherwise it returns 1 after 
+ * deletion.
+ *
+ * Arguments: key - The key to search and delete.
+ *            tree - The tree to search and delete in.
+ *
+ * Returns: 1 - Successful deletion.
+ *          0 - Deletion unsuccessful (key not found).
+ */
+int key_delete(int key, AvlTree *tree){
+  // Check arguments.
+  assert(tree != NULL); 
+}
+
+/*
  * Function: visualize
  * -------------------
  * Description:
@@ -544,18 +572,20 @@ void visualize(AvlTree *tree){
   int level = 0;
   int max = 1;
   int max_prev = 0;
+  for(int i = 0; i < tree->height + 1; i++){
+    printf("   "); // 3x whitespace.
+  }
   for(int i = 0; i < max_n_nodes; i++){
-    // Print whitespaces to make the tree more readable.
-    for(int j = 0; j < (tree->height + 1 - level); j++){
-      printf(" ");
-    }
-    
     if(node_list[i] == -1){
       // -1 means no node, so print x.
-      printf("x ");
+      printf(" x "); // print x.
+      printf("   "); // 3x whitespace.
     }else{
       // Print key of the node at that index.
-      printf("%d ", node_list[i]);
+      if(node_list[i] < 100) printf(" ");
+      printf("%d", node_list[i]);
+      if(node_list[i] < 10) printf(" ");
+      printf("   "); // 3x whitespace.
     }
 
     // Start a new line after a level is complete.
@@ -564,6 +594,10 @@ void visualize(AvlTree *tree){
       level++;
       max_prev = max;
       max = pow(2, level) + max_prev;
+
+      for(int j = 0; j < (tree->height - level + 1); j++){
+	printf("   "); // 3x whitespace. 
+      }
     }
   }
 }

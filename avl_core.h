@@ -235,6 +235,24 @@ extern int search_by_key(int key, AvlTree *tree, Node **node);
 extern int key_insert_new(int key, AvlTree *tree);
 
 /*
+ * Function: key_delete
+ * --------------------
+ * Description:
+ * This function, for a given key, searches the node
+ * with that order key in the given tree and tries
+ * to delete it. If the key could not be found, the
+ * function returns 0, otherwise it returns 1 after 
+ * deletion.
+ *
+ * Arguments: key - The key to search and delete.
+ *            tree - The tree to search and delete in.
+ *
+ * Returns: 1 - Successful deletion.
+ *          0 - Deletion unsuccessful (key not found).
+ */
+extern int key_delete(int key, AvlTree *tree);
+
+/*
  * Function: visualize
  * -------------------
  * Description:
