@@ -169,13 +169,30 @@ void upin(AvlTree *tree, Node *node){
       exit(2);
     }
   }else{
-    
+    if(p_bal <= 0){
+      return;
+    }else if(p_bal == 1){
+      upin(tree, parent);
+    }else if(p_bal > 1){
+      if(bal == 1){
+	rotate_left(tree, parent);
+	
+	// TODO: update balance?
+      }else if(bal == -1){
+	rotate_right_left(tree, parent);
+
+	// TODO: update balance?
+      }else{
+	// This should not be reached.
+	printf("Critical error occured in upin procedure.\n");
+	exit(2);
+      }
+    }else{
+      // This should not be reached.
+      printf("Critical error occured in upin procedure.\n");
+      exit(2);
+    }
   }
-  
-  /*
-  // This should be unreachable code. Error if reached.
-  printf("Critical error occured in procedure upin.\n");
-  exit(2); // Exit with code 2. See Error index for details.  */
 }
 
 /*
@@ -231,6 +248,7 @@ void rotate_right(AvlTree *tree, Node *node){
   if(node->parent == NULL){
     // Operating on root.
     tree->root = l_child;
+    l_child->parent = NULL;
   }else{
     // Give the parent its new child.
     if(node->key < node->parent->key){
@@ -240,10 +258,14 @@ void rotate_right(AvlTree *tree, Node *node){
       // We are right child.
       node->parent->right_child = l_child;
     }
+    // Adapt the parent.
+    l_child->parent = node->parent;
   }
   // Rearrange the children nodes.
   node->left_child = l_child->right_child;
+  if(l_child->right_child) l_child->right_child->parent = node;
   l_child->right_child = node;
+  node->parent = l_child;
 }
 
 /*
@@ -270,6 +292,7 @@ void rotate_left(AvlTree *tree, Node *node){
   if(node->parent == NULL){
     // Operating on root.
     tree->root = r_child;
+    r_child->parent = NULL;
   }else{
     // Give the parent its new child.
     if(node->key < node->parent->key){
@@ -279,10 +302,36 @@ void rotate_left(AvlTree *tree, Node *node){
       // We are right child.
       node->parent->right_child = r_child;
     }
+    // Adapt the parent.
+    r_child->parent = node->parent;
   }
   // Rearrange the children nodes.
   node->right_child = r_child->left_child;
+  if(r_child->left_child) r_child->left_child->parent = node;
   r_child->left_child = node;
+  node->parent = r_child;
+}
+
+/*
+ * Function: rotate_right_left
+ * ---------------------------
+ * Description:
+ * Execute a double (right-left) rotation around a
+ * node.
+ *
+ * Arguments: node - The node to rotate.
+ *            tree - The tree opearting in.
+ *
+ * Retruns: void
+ */
+void rotate_right_left(AvlTree *tree, Node *node){
+  // Check arguments.
+  assert(tree != NULL);
+  assert(node != NULL);
+
+  // Do the double rotation.
+  rotate_right(tree, node->right_child);
+  rotate_left(tree, node);
 }
 
 /*
@@ -302,6 +351,7 @@ void rotate_left_right(AvlTree *tree, Node *node){
   assert(tree != NULL);
   assert(node != NULL);
 
+  // Do the double rotation.
   rotate_left(tree, node->left_child);
   rotate_right(tree, node);
 }

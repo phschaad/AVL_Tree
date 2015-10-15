@@ -173,6 +173,20 @@ extern void rotate_right(AvlTree *tree, Node *node);
 extern void rotate_left(AvlTree *tree, Node *node);
 
 /*
+ * Function: rotate_right_left
+ * ---------------------------
+ * Description:
+ * Execute a double (right-left) rotation around a
+ * node.
+ *
+ * Arguments: node - The node to rotate.
+ *            tree - The tree opearting in.
+ *
+ * Retruns: void
+ */
+extern void rotate_right_left(AvlTree *tree, Node *node);
+
+/*
  * Function: rotate_left_right
  * ---------------------------
  * Description:
