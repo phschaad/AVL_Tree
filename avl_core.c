@@ -119,11 +119,191 @@ Node * make_node_empty(int key){
  * calls the corresponding rotations to fix it.
  *
  * Arguments: node - The node from which upin is called. 
+ *            tree - The tree operating in.
  * 
  * Returns: void 
  */
-void upin(Node *node){
+void upin(AvlTree *tree, Node *node){
+  // Check arguments.
+  assert(tree != NULL);
+  assert(node != NULL);
 
+  // Figure out the balance of the node.
+  int bal = balance(node);
+  
+  // End upin procedure if root is reached.
+  if(node->parent == NULL){
+    return;
+  }
+
+  // Pointer to the parent node.
+  Node *parent = node->parent;
+
+  // Figure out the balance of it's parent.
+  int p_bal = balance(parent);
+  
+  if(node->key < parent->key){
+    if(p_bal >= 0){
+      return;
+    }else if(p_bal == -1){
+      upin(tree, parent);
+    }else if(p_bal < -1){
+      if(bal == -1){
+	rotate_right(tree, parent);
+
+	// TODO: update balance?
+	//bal = balance(parent);
+	//bal = balance(node);
+      }else if(bal == 1){
+	rotate_left_right(tree, parent);
+	
+	// TODO: update balance?
+      }else{
+	// This should not be reached.
+	printf("Critical error occured in upin procedure.\n");
+	exit(2);
+      }
+    }else{
+      // This should not be reached.
+      printf("Critical error occured in upin procedure.\n");
+      exit(2);
+    }
+  }else{
+    
+  }
+  
+  /*
+  // This should be unreachable code. Error if reached.
+  printf("Critical error occured in procedure upin.\n");
+  exit(2); // Exit with code 2. See Error index for details.  */
+}
+
+/*
+ * Function: balance
+ * -----------------
+ * Description:
+ * Figure out the balance of a node.
+ * Scan the height of the children trees to calculate it.
+ *
+ * Arguments: node - The node in question.
+ * 
+ * Returns: the balance.
+ */
+int balance(Node *node){
+  // Check arguments.
+  assert(node != NULL);
+
+  // The base heights for no children.
+  int l_height = -1;
+  int r_height = -1;
+  // Update children's height if they exists.
+  if(node->left_child) l_height = node->left_child->height;
+  if(node->right_child) r_height = node->right_child->height;
+
+  // Update the current node's height.
+  node->height = max(l_height, r_height) + 1;
+
+  // Return the balance (height difference).
+  return r_height - l_height;
+}
+
+/*
+ * Function: rotate_right
+ * ----------------------
+ * Description:
+ * Execute a single righthand rotation around
+ * a given node.
+ *
+ * Arguments: node - The node to rotate.
+ *            tree - The tree operating in. 
+ *
+ * Returns: void 
+ */
+void rotate_right(AvlTree *tree, Node *node){
+  // Check arguments.
+  assert(tree != NULL);
+  assert(node != NULL);
+
+  // Pointer to keep track of the second node in rotation.
+  Node *l_child = node->left_child;
+
+  // Do rotation.
+  if(node->parent == NULL){
+    // Operating on root.
+    tree->root = l_child;
+  }else{
+    // Give the parent its new child.
+    if(node->key < node->parent->key){
+      // We are left child.
+      node->parent->left_child = l_child;
+    }else{
+      // We are right child.
+      node->parent->right_child = l_child;
+    }
+  }
+  // Rearrange the children nodes.
+  node->left_child = l_child->right_child;
+  l_child->right_child = node;
+}
+
+/*
+ * Function: rotate_left
+ * ---------------------
+ * Description:
+ * Execute a single lefthand rotation around
+ * a given node. 
+ * 
+ * Arguments: node - The node to rotate.
+ *            tree - The tree operating in.
+ *
+ * Returns: void
+ */
+void rotate_left(AvlTree *tree, Node *node){
+  // Check arguments.
+  assert(tree != NULL);
+  assert(node != NULL);
+
+  // Pointer to keep track of the second node in rotation.
+  Node *r_child = node->right_child;
+
+  // Do rotation.
+  if(node->parent == NULL){
+    // Operating on root.
+    tree->root = r_child;
+  }else{
+    // Give the parent its new child.
+    if(node->key < node->parent->key){
+      // We are left child.
+      node->parent->left_child = r_child;
+    }else{
+      // We are right child.
+      node->parent->right_child = r_child;
+    }
+  }
+  // Rearrange the children nodes.
+  node->right_child = r_child->left_child;
+  r_child->left_child = node;
+}
+
+/*
+ * Function: rotate_left_right
+ * ---------------------------
+ * Description:
+ * Execute a double (left-right) rotation around a
+ * node. 
+ *
+ * Arguments: node - The node to rotate.
+ *            tree - The tree operating in.
+ * 
+ * Returns: void
+ */
+void rotate_left_right(AvlTree *tree, Node *node){
+  // Check arguments.
+  assert(tree != NULL);
+  assert(node != NULL);
+
+  rotate_left(tree, node->left_child);
+  rotate_right(tree, node);
 }
 
 /*
@@ -212,6 +392,9 @@ int key_insert_new(int key, AvlTree *tree){
     tree->height = 0;
     // Increment number of nodes in tree.
     tree->number_of_nodes++;
+
+    // Check balance and rebalance.
+    upin(tree, new_node);
     return 1;
   }else{
     // Traverse the tree.
@@ -232,6 +415,9 @@ int key_insert_new(int key, AvlTree *tree){
 	  tree->height = max(tree->height, n_height);
 	  // Increase number of nodes in tree.
 	  tree->number_of_nodes++;
+	  
+	  // Check balance and rebalance.
+	  upin(tree, new_node);
 	  return 1;
 	}
 
@@ -249,6 +435,9 @@ int key_insert_new(int key, AvlTree *tree){
 	  tree->height = max(tree->height, n_height);
 	  // Increase number of nodes in tree.
 	  tree->number_of_nodes++;
+	  
+	  // Check balance and rebalance.
+	  upin(tree, new_node);
 	  return 1;
 	}
 

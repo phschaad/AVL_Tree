@@ -125,10 +125,66 @@ extern Node * make_node_empty(int key);
  * calls the corresponding rotations to fix it.
  *
  * Arguments: node - The node from which upin is called. 
+ *            tree - The tree operating in.
  * 
  * Returns: void 
  */
-extern void upin(Node *node);
+extern void upin(AvlTree *tree, Node *node);
+
+/*
+ * Function: balance
+ * -----------------
+ * Description:
+ * Figure out the balance of a node.
+ * Scan the height of the children trees to calculate it.
+ *
+ * Arguments: node - The node in question.
+ * 
+ * Returns: the balance.
+ */
+extern int balance(Node *node);
+
+/*
+ * Function: rotate_right
+ * ----------------------
+ * Description:
+ * Execute a single righthand rotation around
+ * a given node.
+ *
+ * Arguments: node - The node to rotate.
+ *            tree - The tree operating in.
+ *
+ * Returns: void 
+ */
+extern void rotate_right(AvlTree *tree, Node *node);
+
+/*
+ * Function: rotate_left
+ * ---------------------
+ * Description:
+ * Execute a single lefthand rotation around
+ * a given node. 
+ * 
+ * Arguments: node - The node to rotate.
+ *            tree - The tree operating in.
+ *
+ * Returns: void
+ */
+extern void rotate_left(AvlTree *tree, Node *node);
+
+/*
+ * Function: rotate_left_right
+ * ---------------------------
+ * Description:
+ * Execute a double (left-right) rotation around a
+ * node. 
+ *
+ * Arguments: node - The node to rotate.
+ *            tree - The tree operating in.
+ * 
+ * Returns: void
+ */
+extern void rotate_left_right(AvlTree *tree, Node *node);
 
 /*
  * Function: search_by_key
