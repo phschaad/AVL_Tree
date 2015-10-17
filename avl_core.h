@@ -123,6 +123,23 @@ extern Node * make_node_empty(int key);
 extern void upin(AvlTree *tree, Node *node);
 
 /*
+ * Function: upout
+ * ---------------
+ * Description:
+ * This method is called after deletion of a node
+ * and walks up the tree from the deleted
+ * node, checking the avl condition on every point.
+ * If the AVL condition is violated at a point, it
+ * calls the corresponding rotations to fix it.
+ *
+ * Arguments: node - The node from which upout is called. 
+ *            tree - The tree operating in.
+ * 
+ * Returns: void 
+ */
+void upout(AvlTree *tree, Node *node);
+
+/*
  * Function: balance
  * -----------------
  * Description:

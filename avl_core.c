@@ -204,6 +204,29 @@ void upin(AvlTree *tree, Node *node){
 }
 
 /*
+ * Function: upout
+ * ---------------
+ * Description:
+ * This method is called after deletion of a node
+ * and walks up the tree from the deleted
+ * node, checking the avl condition on every point.
+ * If the AVL condition is violated at a point, it
+ * calls the corresponding rotations to fix it.
+ *
+ * Arguments: node - The node from which upout is called. 
+ *            tree - The tree operating in.
+ * 
+ * Returns: void 
+ */
+void upout(AvlTree *tree, Node *node){
+  // Check arguments.
+  assert(tree != NULL);
+  assert(node != NULL);
+
+  
+}
+
+/*
  * Function: balance
  * -----------------
  * Description:
@@ -271,6 +294,7 @@ void rotate_right(AvlTree *tree, Node *node){
   }
   // Rearrange the children nodes.
   node->left_child = l_child->right_child;
+  // If a child is there, adapt its parent.
   if(l_child->right_child) l_child->right_child->parent = node;
   l_child->right_child = node;
   node->parent = l_child;
@@ -315,6 +339,7 @@ void rotate_left(AvlTree *tree, Node *node){
   }
   // Rearrange the children nodes.
   node->right_child = r_child->left_child;
+  // If a child is there, adapt its parent.
   if(r_child->left_child) r_child->left_child->parent = node;
   r_child->left_child = node;
   node->parent = r_child;
@@ -490,7 +515,28 @@ int key_delete(int key, AvlTree *tree){
   // Check arguments.
   assert(tree != NULL);
 
-  // TODO: Implement
+  // Pointer to the node to be deleted.
+  Node *del_node = NULL;
+  // Search the node to be deleted and store the return value.
+  int callback = search_by_key(key, tree, &del_node);
+
+  if(callback){
+    if(del_node){
+      
+    }else{
+      // Deletion-Node pointer is NULL, despite being assigned
+      // in the search_by_key method. Return an error.
+      printf("Delete-Method recieved wrongful NULL Pointer from search.\n");
+      exit(2);
+    }
+  }else{
+    // Key is not in the tree, nothing to delete.
+    return 0;
+  }
+
+  // This should be unreachable code. Error if reached.
+  printf("Critical error occured while deleting a node.\n");
+  exit(2);
 }
 
 /*

@@ -13,7 +13,6 @@ int main(int argc, char **argv){
   AvlTree *tree = make_tree_empty();
   
   srand(time(NULL));
-  // 17
   for(int i = 0; i < 30; i++){
     int r = rand_in_range(1, 999);
     key_insert_new(r, tree);
