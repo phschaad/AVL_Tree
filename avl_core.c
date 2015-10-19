@@ -547,27 +547,69 @@ int key_delete(int key, AvlTree *tree){
   // Search the node to be deleted and store the return value.
   int callback = search_by_key(key, tree, &del_node);
 
-  if(callback){
-    if(del_node){
-      if(del_node->height == 1){
-	// The nodes children have no children.
-	if(del_node->left_child){
-	  // Replace the node with it's left child.
-	  
-	}else{
-	  // Replace the node with it's right child.
-	  
-	}
-      }
-    }else{
-      // Deletion-Node pointer is NULL, despite being assigned
-      // in the search_by_key method. Return an error.
-      printf("Delete-Method recieved wrongful NULL Pointer from search.\n");
-      exit(2);
-    }
-  }else{
-    // Key is not in the tree, nothing to delete.
+  if(callback == 0){
+    // The key was not found, return unsuccessful deletion.
     return 0;
+  }
+  
+  if(del_node){
+    if(del_node->left_child){
+
+    }else{
+      // There is no left child.
+      if(del_node->parent){
+	
+      }else{
+	// Deleting the root.
+	tree->root = del_node->right_child;
+	tree->number_of_nodes--;
+      }
+    }
+
+    // Update the tree height.
+    tree->height = tree->root->height;
+
+    // Free the memory location and return.
+    free(del_node);
+    del_node = NULL;
+    return 1;
+    /**
+    
+    // NULL-Check.
+    if(del_node->height == 0){
+      // The deletion node has no children.
+      if(del_node->parent){
+      // Not the root. Delete it.
+      if(del_node->key < del_node->parent->key){
+	// Sits to the left of the parent.
+	del_node->parent->left_child = NULL;
+      }else{
+	// Sits to the right of the parent.
+	del_node->parent->right_child = NULL;
+      }
+      // Reduce the number of nodes in the tree.
+      tree->number_of_nodes--;
+      // Check for an imbalance and attempt to rebalance.
+      upout(del_node->parent);
+      }else{
+	// This is the root, remove it from the tree.
+	tree->root = NULL;
+	tree->number_of_nodes = 0;
+	tree->height = -1;
+      }
+      // Free the memory location.
+      free(del_node);
+      del_node = NULL;
+      return 1;
+    }else if(del_node->height == 1){
+      
+
+      
+    }else{
+
+    }
+
+    */
   }
 
   // This should be unreachable code. Error if reached.
