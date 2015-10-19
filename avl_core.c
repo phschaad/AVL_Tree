@@ -554,7 +554,8 @@ int key_delete(int key, AvlTree *tree){
   
   if(del_node){
     if(del_node->left_child){
-
+      // This node has a let child.
+      
     }else{
       // There is no left child.
       if(del_node->parent){
