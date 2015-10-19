@@ -137,7 +137,23 @@ extern void upin(AvlTree *tree, Node *node);
  * 
  * Returns: void 
  */
-void upout(AvlTree *tree, Node *node);
+extern void upout(AvlTree *tree, Node *node);
+
+/*
+ * Function: get_height
+ * --------------------
+ * Description:
+ * Calculates and returns the height of the given
+ * Node. This does not adapt the height of its
+ * children, so if those are off, the new height is
+ * also going to be off! This is to conserve computational
+ * effort. 
+ * 
+ * Arguments: node - The node to which to calculate the height.
+ * 
+ * Returns: The height of node.
+ */
+extern int get_height(Node *node);
 
 /*
  * Function: balance

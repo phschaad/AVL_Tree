@@ -153,14 +153,10 @@ void upin(AvlTree *tree, Node *node){
       if(bal == -1){
 	// Do a single right rotation.
 	rotate_right(tree, parent);
-
-	// TODO: update balance?
       }else if(bal == 1){
 	// Do a double rotation (left, right).
 	rotate_left(tree, parent->left_child);
 	rotate_right(tree, parent);
-	
-	// TODO: update balance?
       }else{
 	// This should not be reached.
 	printf("Critical error occured in upin procedure.\n");
@@ -182,14 +178,10 @@ void upin(AvlTree *tree, Node *node){
       if(bal == 1){
 	// Do a single left rotation. 
 	rotate_left(tree, parent);
-	
-	// TODO: update balance?
       }else if(bal == -1){
 	// Do a double rotation (right, left).
 	rotate_right(tree, parent->right_child);
 	rotate_left(tree, parent);
-
-	// TODO: update balance?
       }else{
 	// This should not be reached.
 	printf("Critical error occured in upin procedure.\n");
@@ -224,6 +216,30 @@ void upout(AvlTree *tree, Node *node){
   assert(node != NULL);
 
   
+}
+
+/*
+ * Function: get_height
+ * --------------------
+ * Description:
+ * Calculates and returns the height of the given
+ * Node. This does not adapt the height of its
+ * children, so if those are off, the new height is
+ * also going to be off! This is to conserve computational
+ * effort. 
+ * 
+ * Arguments: node - The node to which to calculate the height.
+ * 
+ * Returns: The height of node.
+ */
+int get_height(Node *node){
+  assert(node != NULL);
+  
+  int l_height = -1;
+  int r_height = -1;
+  if(node->left_child) l_height = node->left_child->height;
+  if(node->right_child) r_height = node->right_child->height;
+  return max(l_height, r_height) + 1;
 }
 
 /*
@@ -298,6 +314,17 @@ void rotate_right(AvlTree *tree, Node *node){
   if(l_child->right_child) l_child->right_child->parent = node;
   l_child->right_child = node;
   node->parent = l_child;
+
+  // Update the heights.
+  if(node){
+    node->height = get_height(node);
+  }
+  if(l_child){
+    if(l_child->left_child){
+      l_child->left_child->height = get_height(l_child->left_child);
+    }
+    l_child->height = get_height(l_child);
+  }
 }
 
 /*
@@ -343,6 +370,17 @@ void rotate_left(AvlTree *tree, Node *node){
   if(r_child->left_child) r_child->left_child->parent = node;
   r_child->left_child = node;
   node->parent = r_child;
+
+  // Update the heights.
+  if(node){
+    node->height = get_height(node);
+  }
+  if(r_child){
+    if(r_child->right_child){
+      r_child->right_child->height = get_height(r_child->right_child);
+    }
+    r_child->height = get_height(r_child);
+  }
 }
 
 /*
@@ -431,16 +469,11 @@ int key_insert_new(int key, AvlTree *tree){
     tree->height = 0;
     // Increment number of nodes in tree.
     tree->number_of_nodes++;
-
-    // Check balance and rebalance.
-    upin(tree, new_node);
     return 1;
   }else{
     // Traverse the tree.
     // active keeps track of the current traversal "index".
     Node *active = tree->root;
-    // Keeps track of the current traversal depth.
-    int n_height = 0;
     
     while(1){
       if(key < active->key){
@@ -449,19 +482,16 @@ int key_insert_new(int key, AvlTree *tree){
 	  // Insert to the left of active.
 	  active->left_child = new_node;
 	  new_node->parent = active;
-	  n_height++; // Increment the new height.
-	  // Check if hight needs to be updated, if yes do it.
-	  tree->height = max(tree->height, n_height);
 	  // Increase number of nodes in tree.
 	  tree->number_of_nodes++;
-	  
 	  // Check balance and rebalance.
 	  upin(tree, new_node);
+	  // Update the height of the tree.
+	  tree->height = tree->root->height;
 	  return 1;
 	}
 
 	// Continue traversal.
-	n_height++;
 	active = active->left_child;
       }else if(key > active->key){
 	// New node is expected to right of active.
@@ -469,19 +499,16 @@ int key_insert_new(int key, AvlTree *tree){
 	  // Insert to the right of active.
 	  active->right_child = new_node;
 	  new_node->parent = active;
-	  n_height++; // Increment the new height.
-	  // Check if hight needs to be updated, if yes, do it.
-	  tree->height = max(tree->height, n_height);
 	  // Increase number of nodes in tree.
 	  tree->number_of_nodes++;
-	  
 	  // Check balance and rebalance.
 	  upin(tree, new_node);
+	  // Update the height of the tree.
+	  tree->height = tree->root->height;
 	  return 1;
 	}
 
 	// Continue traversal.
-	n_height++;
 	active = active->right_child; 
       }else{
 	// Key already exists in tree. Insertion failure.
@@ -522,7 +549,14 @@ int key_delete(int key, AvlTree *tree){
 
   if(callback){
     if(del_node){
-      
+      if(del_node->left_child && del_node->right_child){
+	// The node has two children.
+	
+      }else if(del_node->left_child){
+	// The node only has a left child
+      }else{
+	
+      }
     }else{
       // Deletion-Node pointer is NULL, despite being assigned
       // in the search_by_key method. Return an error.
