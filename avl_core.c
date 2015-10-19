@@ -549,13 +549,15 @@ int key_delete(int key, AvlTree *tree){
 
   if(callback){
     if(del_node){
-      if(del_node->left_child && del_node->right_child){
-	// The node has two children.
-	
-      }else if(del_node->left_child){
-	// The node only has a left child
-      }else{
-	
+      if(del_node->height == 1){
+	// The nodes children have no children.
+	if(del_node->left_child){
+	  // Replace the node with it's left child.
+	  
+	}else{
+	  // Replace the node with it's right child.
+	  
+	}
       }
     }else{
       // Deletion-Node pointer is NULL, despite being assigned
