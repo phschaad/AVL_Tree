@@ -143,7 +143,7 @@ void upin(AvlTree *tree, Node *node){
 
   // Check balance for correctness, rotating if necessary.
   if(node->key < parent->key){
-    if(p_bal >= 0){
+    if(p_bal == 0){
       // Exit upin if the parent balance is 0.
       return;
     }else if(p_bal == -1){
@@ -215,7 +215,52 @@ void upout(AvlTree *tree, Node *node){
   assert(tree != NULL);
   assert(node != NULL);
 
+  // Keep track of the parent of the node.
+  Node *parent = node->parent;
   
+  // Get the balance of the current node.
+  int bal = balance(node);
+
+  if(bal < -1){
+    // The node has a left-heavy imbalance.
+
+    // Figure out the balance of its left child.
+    int l_bal = balance(node->left_child);
+
+    if(l_bal == -1){
+      // Double left heavy imbalance. Fix by single right rotation.
+      rotate_right(tree, node);
+    }else if(l_bal == 1){
+      // Left-Right imbalance. Fix with a left-right rotation.
+      rotate_left(tree, node->left_child);
+      rotate_right(tree, node);
+    }else{
+      // An error must have occured. Illegal configuration.
+      printf("Upout has resulted in an illegal configuration.\n");
+      exit(2);
+    }
+  }else if(bal > 1){
+    // The node has a right-heavy imbalance.
+
+    // Figure out the balance of its right child.
+    int r_bal = balance(node->right_child);
+
+    if(r_bal == 1){
+      // Double right heavy imbalance. Fix with a single left rotation.
+      rotate_left(tree, node);
+    }else if(r_bal == -1){
+      // Right-Left imbalance. Fix with a right-left rotation.
+      rotate_right(tree, node->right_child);
+      rotate_left(tree, node);
+    }else{
+      // An error must have occured. Illegal configuration.
+      printf("Upout has resulted in an illegal configuration.\n");
+      exit(2);
+    }
+  }
+
+  // Continue upwards traversal.
+  if(parent) upout(tree, parent);
 }
 
 /*
@@ -233,12 +278,17 @@ void upout(AvlTree *tree, Node *node){
  * Returns: The height of node.
  */
 int get_height(Node *node){
+  // Check arguments.
   assert(node != NULL);
-  
+
+  // The base heights for no children.
   int l_height = -1;
   int r_height = -1;
+  // Update children's height if they exists.
   if(node->left_child) l_height = node->left_child->height;
   if(node->right_child) r_height = node->right_child->height;
+  
+  // Calculate and return the correct height.
   return max(l_height, r_height) + 1;
 }
 
@@ -544,73 +594,99 @@ int key_delete(int key, AvlTree *tree){
 
   // Pointer to the node to be deleted.
   Node *del_node = NULL;
-  // Search the node to be deleted and store the return value.
-  int callback = search_by_key(key, tree, &del_node);
 
-  if(callback == 0){
+  // Search for the key to be deleted.
+  if(!search_by_key(key, tree, &del_node)){
     // The key was not found, return unsuccessful deletion.
     return 0;
   }
-  
+
   if(del_node){
-    if(del_node->left_child){
-      // This node has a let child.
-      
+    // Pointer to the replacement node (for the deleted one).
+    Node *repl = del_node->left_child;
+    
+    // If the replacement pointer is null, there was no left child.
+    // Take the right one instead. If not, continue to iterate until
+    // the correct replacement (the predecessor in the tree) is found.
+    if(repl == NULL){
+      repl = del_node->right_child;
     }else{
-      // There is no left child.
-      if(del_node->parent){
-	
-      }else{
-	// Deleting the root.
-	tree->root = del_node->right_child;
-	tree->number_of_nodes--;
+      // Iterate until predecessor is found.
+      while(repl->right_child){
+	repl = repl->right_child;
       }
     }
 
+    // This points to the node from which we want to start the upout
+    // procedure after deleting. Generally, this is the parent of the
+    // actually unlinked node. So in case the replacement node is not
+    // a direct child of the deletion node, this will point to the
+    // parent of the replacement node. If it is a direct child, it will
+    // point to the parent of the deletion node. If that is the root, we
+    // let it point to NULL, and do not have to rebalance.
+    Node *rebalance = NULL;
+    if(repl){
+      if(repl->parent != del_node){
+	rebalance = repl->parent;
+      }else{
+	if(del_node->parent) rebalance = del_node->parent;
+      }
+
+      // Give the replacement node the right child of the node to be
+      // deleted. If the replacement is the right child of the node to
+      // be deleted, skip this step.
+      if(repl != del_node->right_child){
+	repl->right_child = del_node->right_child;
+	if(del_node->right_child) del_node->right_child->parent = repl;
+      }
+
+      // Give the parent of the replacement node its left child as a right child,
+      // and adjust the left child of the replacement node to be the left child
+      // of the deletion node.
+      // If the parent of the replacement node is the deletion node itself, skip
+      // this step.
+      if(repl->parent != del_node){
+	repl->parent->right_child = repl->left_child;
+	if(repl->left_child) repl->left_child->parent = repl->parent;
+	repl->left_child = del_node->left_child;
+	del_node->left_child->parent = repl;
+      }
+    }else{
+      if(!rebalance && del_node->parent) rebalance = del_node->parent;
+    }
+    
+    // Point the parent of the deletion node to the replacement node.
+    if(del_node->parent){
+      if(del_node->key < del_node->parent->key){
+	// Deletion node is a left child of its parent.
+	del_node->parent->left_child = repl;
+      }else{
+	// Deletion node is a right child of its parent.
+	del_node->parent->right_child = repl;
+      }
+      if(repl) repl->parent = del_node->parent;
+    }else{
+      // Handeling the deletion of the root.
+      tree->root = repl;
+      if(repl) repl->parent = NULL;
+    }
+
+    // Call the rebalance procedure from the rebalance node on (if one exists).
+    if(rebalance) upout(tree, rebalance);
+
     // Update the tree height.
-    tree->height = tree->root->height;
+    if(tree->root){
+      tree->height = tree->root->height;
+    }else{
+      tree->height = -1;
+    }
+    // Update the number of nodes in the tree.
+    tree->number_of_nodes--;
 
     // Free the memory location and return.
     free(del_node);
     del_node = NULL;
     return 1;
-    /**
-    
-    // NULL-Check.
-    if(del_node->height == 0){
-      // The deletion node has no children.
-      if(del_node->parent){
-      // Not the root. Delete it.
-      if(del_node->key < del_node->parent->key){
-	// Sits to the left of the parent.
-	del_node->parent->left_child = NULL;
-      }else{
-	// Sits to the right of the parent.
-	del_node->parent->right_child = NULL;
-      }
-      // Reduce the number of nodes in the tree.
-      tree->number_of_nodes--;
-      // Check for an imbalance and attempt to rebalance.
-      upout(del_node->parent);
-      }else{
-	// This is the root, remove it from the tree.
-	tree->root = NULL;
-	tree->number_of_nodes = 0;
-	tree->height = -1;
-      }
-      // Free the memory location.
-      free(del_node);
-      del_node = NULL;
-      return 1;
-    }else if(del_node->height == 1){
-      
-
-      
-    }else{
-
-    }
-
-    */
   }
 
   // This should be unreachable code. Error if reached.

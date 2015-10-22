@@ -35,6 +35,12 @@ void visualize(AvlTree *tree){
   // Check arguments.
   assert(tree != NULL);
 
+  // If the tree is empty, visualize it with a {empty} tag.
+  if(tree->root == NULL){
+    printf("{empty}\n");
+    return;
+  }
+  
   // Total number of layers in the tree.
   int layers = tree->height + 1;
 
