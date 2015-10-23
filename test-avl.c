@@ -6,8 +6,8 @@
 #include <time.h>
 #include <assert.h>
 
-#define N_INSERT 30 // The number of values to insert.
-#define N_REMOVE 15 // The numver of values to delete. 
+#define N_INSERT 1000 // The number of values to insert.
+#define N_REMOVE 900 // The numver of values to delete. 
 
 int has(AvlTree *tree, int key){
   Node *node = NULL;
@@ -30,11 +30,10 @@ int rand_in_range(int min, int max){
  * @return The height of the node currently looked at.
  */
 int rec_height(Node *node){
-  int l_height = -1;
-  int r_height = -1;
-  if(node->left_child) l_height = rec_height(node->left_child);
-  if(node->right_child) r_height = rec_height(node->right_child);
-  node->height = max(l_height, r_height) + 1;
+  if(!node) return -1;
+  node->height = get_int_max(
+			     rec_height(node->left_child),
+			     rec_height(node->right_child)) + 1;
   return node->height;
 }
 
@@ -63,80 +62,80 @@ int main(int argc, char **argv){
   // Create an empty avl tree.
   AvlTree *tree = make_tree_empty();
 
-  /* int insert_values[N_INSERT]; */
-  /* int delete_values[N_REMOVE]; */
+  int insert_values[N_INSERT];
+  int delete_values[N_REMOVE];
   
-  /* srand(time(NULL)); */
-  /* for(int i = 0; i < N_INSERT; i++){ */
-  /*   int r = rand_in_range(1, 999); */
-  /*   insert_values[i] = r; */
-  /*   key_insert_new(r, tree); */
-  /* } */
-  
-  /* printf("Inorder traversal: "); */
-  /* traverse_inorder_console(tree->root); */
-  /* printf("\nNumber of nodes: %d\n", tree->number_of_nodes); */
-  /* printf("Number of levels: %d\n", tree->height + 1); */
-  /* printf("Visual representation:\n"); */
-  /* visualize(tree); */
-
-  /* // Recalculate the heights and check avl property. */
-  /* rec_height(tree->root); */
-  /* if(check_avl_property(tree->root)){ */
-  /*   printf("AVL property satisfied.\n"); */
-  /* }else{ */
-  /*   printf("AVL property violated.\n"); */
-  /* } */
-
-  /* for(int i = 0; i < N_INSERT; i++){ */
-  /*   if(!has(tree, insert_values[i])){ */
-  /*     printf("Did not find key %d despite having added it!\n", */
-  /* 	     insert_values[i]); */
-  /*   } */
-  /* } */
-
-  /* for(int i = 0; i < N_REMOVE; i++){ */
-  /*   int r = rand_in_range(0, N_INSERT - 1); */
-  /*   delete_values[i] = insert_values[r]; */
-  /*   key_delete(delete_values[i], tree); */
-  /* } */
-
-  /* for(int i = 0; i < N_REMOVE; i++){ */
-  /*   if(has(tree, delete_values[i])){ */
-  /*     printf("Found key %d in tree, despite having removed it!\n", */
-  /* 	     delete_values[i]); */
-  /*   } */
-  /* } */
+  srand(time(NULL));
+  for(int i = 0; i < N_INSERT; i++){
+    int r = rand_in_range(1, 9999999);
+    insert_values[i] = r;
+    key_insert_new(r, tree);
+  }
   
   /* printf("Inorder traversal: "); */
   /* traverse_inorder_console(tree->root); */
-  /* printf("\nNumber of nodes: %d\n", tree->number_of_nodes); */
-  /* printf("Number of levels: %d\n", tree->height + 1); */
+  printf("\nNumber of nodes: %d\n", tree->number_of_nodes);
+  printf("Number of levels: %d\n", tree->height + 1);
   /* printf("Visual representation:\n"); */
   /* visualize(tree); */
 
-  /* // Recalculate the heights and check avl property. */
-  /* rec_height(tree->root); */
-  /* if(check_avl_property(tree->root)){ */
-  /*   printf("AVL property satisfied.\n"); */
-  /* }else{ */
-  /*   printf("AVL property violated.\n"); */
-  /* } */
+  // Recalculate the heights and check avl property.
+  rec_height(tree->root);
+  if(check_avl_property(tree->root)){
+    printf("AVL property satisfied.\n");
+  }else{
+    printf("AVL property violated.\n");
+  }
 
-  key_insert_new(3, tree);
-  key_insert_new(2, tree);
-  key_insert_new(7, tree);
-  key_insert_new(1, tree);
-  key_insert_new(5, tree);
-  key_insert_new(8, tree);
-  key_insert_new(4, tree);
-  key_insert_new(6, tree);
+  for(int i = 0; i < N_INSERT; i++){
+    if(!has(tree, insert_values[i])){
+      printf("Did not find key %d despite having added it!\n",
+  	     insert_values[i]);
+    }
+  }
+  
+  for(int i = 0; i < N_REMOVE; i++){
+    int r = rand_in_range(0, N_INSERT - 1);
+    delete_values[i] = insert_values[r];
+    key_delete(delete_values[i], tree);
+  }
 
-  visualize(tree);
+  for(int i = 0; i < N_REMOVE; i++){
+    if(has(tree, delete_values[i])){
+      printf("Found key %d in tree, despite having removed it!\n",
+  	     delete_values[i]);
+    }
+  }
+  
+  /* printf("Inorder traversal: "); */
+  /* traverse_inorder_console(tree->root); */
+  printf("\nNumber of nodes: %d\n", tree->number_of_nodes);
+  printf("Number of levels: %d\n", tree->height + 1);
+  /* printf("Visual representation:\n"); */
+  /* visualize(tree); */
 
-  key_delete(1, tree);
+  // Recalculate the heights and check avl property.
+  rec_height(tree->root);
+  if(check_avl_property(tree->root)){
+    printf("AVL property satisfied.\n");
+  }else{
+    printf("AVL property violated.\n");
+  }
 
-  visualize(tree);
+  /*
+   * --------------
+   * -- Cleanup. --
+   * --------------
+   */
+  
+  // Remove all nodes from the tree.
+  for(int i = 0; i < N_INSERT; i++){
+    key_delete(insert_values[i], tree);
+  }
+  
+  // Remove the tree.
+  free(tree);
+  tree = NULL;
   
   return 0;
 }

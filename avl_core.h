@@ -249,8 +249,8 @@ extern int key_insert_new(int key, AvlTree *tree);
 extern int key_delete(int key, AvlTree *tree);
 
 /*
- * Function: max
- * -------------
+ * Function: get_int_max
+ * ---------------------
  * Description:
  * Simple helper function to determine the max of two
  * Integer numbers.
@@ -260,6 +260,6 @@ extern int key_delete(int key, AvlTree *tree);
  *
  * Returns: the maximum of the two.
  */
-extern int max(int a, int b);
+extern int get_int_max(int a, int b);
 
 #endif /*  __AVL_CORE_H_ */

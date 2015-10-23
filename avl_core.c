@@ -235,9 +235,7 @@ void upout(AvlTree *tree, Node *node){
       rotate_left(tree, node->left_child);
       rotate_right(tree, node);
     }else{
-      // An error must have occured. Illegal configuration.
-      printf("Upout has resulted in an illegal configuration.\n");
-      exit(2);
+      rotate_right(tree, node);
     }
   }else if(bal > 1){
     // The node has a right-heavy imbalance.
@@ -253,9 +251,7 @@ void upout(AvlTree *tree, Node *node){
       rotate_right(tree, node->right_child);
       rotate_left(tree, node);
     }else{
-      // An error must have occured. Illegal configuration.
-      printf("Upout has resulted in an illegal configuration.\n");
-      exit(2);
+      rotate_left(tree, node);
     }
   }
 
@@ -289,7 +285,7 @@ int get_height(Node *node){
   if(node->right_child) r_height = node->right_child->height;
   
   // Calculate and return the correct height.
-  return max(l_height, r_height) + 1;
+  return get_int_max(l_height, r_height) + 1;
 }
 
 /*
@@ -315,7 +311,7 @@ int balance(Node *node){
   if(node->right_child) r_height = node->right_child->height;
 
   // Update the current node's height.
-  node->height = max(l_height, r_height) + 1;
+  node->height = get_int_max(l_height, r_height) + 1;
 
   // Return the balance (height difference).
   return r_height - l_height;
@@ -626,11 +622,7 @@ int key_delete(int key, AvlTree *tree){
     // let it point to NULL, and do not have to rebalance.
     Node *rebalance = NULL;
     if(repl){
-      if(repl->parent != del_node){
-	rebalance = repl->parent;
-      }else{
-	if(del_node->parent) rebalance = del_node->parent;
-      }
+      if(repl->parent != del_node) rebalance = repl->parent;
 
       // Give the replacement node the right child of the node to be
       // deleted. If the replacement is the right child of the node to
@@ -672,7 +664,11 @@ int key_delete(int key, AvlTree *tree){
     }
 
     // Call the rebalance procedure from the rebalance node on (if one exists).
-    if(rebalance) upout(tree, rebalance);
+    if(rebalance){
+      upout(tree, rebalance);
+    }else{
+      if(repl) upout(tree, repl);
+    }
 
     // Update the tree height.
     if(tree->root){
@@ -695,8 +691,8 @@ int key_delete(int key, AvlTree *tree){
 }
 
 /*
- * Function: max
- * -------------
+ * Function: get_int_max
+ * ---------------------
  * Description:
  * Simple helper function to determine the max of two
  * Integer numbers.
@@ -706,6 +702,6 @@ int key_delete(int key, AvlTree *tree){
  *
  * Returns: the maximum of the two.
  */
-int max(int a, int b){
+inline int get_int_max(int a, int b){
   return (a > b) ? a : b;
 }
