@@ -24,11 +24,30 @@ This is a very basic implementation of an AVL-Tree in C, by Philipp Schaad. The 
         * Standard: stdio.h, stdlib.h, time.h, math.h (and pre-deployment: assert.h)
 * To run tests just disable your standard main method (if you have one), and include the test-avl.c to your compilation. You may modify the main method however you like, to test the AVL-Tree to your liking.
 
+### Features ###
+
+* Core Module:
+    - Create an empty tree.
+    - Create a tree from a pre-existing node.
+    - Create empty nodes.
+    - Search by order-key.
+    - Insertion (creating an empty node) by order-key. (Keeps the tree balanced)
+    - Deletion by order-key. (Keeps the tree balanced)
+* Visualizer Module:
+    - Inorder-, Preorder- and Postorder-Traversals of the tree to the console.
+    - Graphical representation of the tree in the console.
+
 ### Contribution guidelines ###
 
-* Writing tests
-* Code review
-* Other guidelines
+* Writing tests:
+    - If you decide to write a more thurough test, you are welcome to do so.
+* Code review:
+    - Please report any bugs you may find!
+    - Any feedback is welcome!
+* Other guidelines:
+    - Please *stick to the used coding style and documentation style*
+    - Please *use comprehensive naming*
+    - And **PLEASE** document **WELL**
 
 ### Contact ###
 
