@@ -2,6 +2,16 @@
 /*
  * Author: Philipp Schaad
  * Creation Date: 151015
+ * 
+ * # ------------------------------------------- #
+ * # ---------------- COPYRIGHT ---------------- #
+ * # ------------------------------------------- #
+ * # This file is part of the AVL-Tree project.  #
+ * # Author of this project is Philipp Schaad.   #
+ * # For additional Licensing information see    #
+ * # the provided LICENSE file. For contact      #
+ * # information see the README.                 #
+ * # ------------------------------------------- #
  *
  * Description:
  * This is the visualizer module of the AVL-Tree implementation.

@@ -3,6 +3,16 @@
  * Author: Philipp Schaad
  * Creation Date: 011015 
  * 
+ * # ------------------------------------------- #
+ * # ---------------- COPYRIGHT ---------------- #
+ * # ------------------------------------------- #
+ * # This file is part of the AVL-Tree project.  #
+ * # Author of this project is Philipp Schaad.   #
+ * # For additional Licensing information see    #
+ * # the provided LICENSE file. For contact      #
+ * # information see the README.                 #
+ * # ------------------------------------------- #
+ * 
  * Description:
  * This is the core module of an AVL-Tree implementation.
  * This module provides:
