@@ -2,7 +2,7 @@
 	      Version 2, October 2015
                                                
  Copyright (C) 2009 Philip Sturgeon me@philsturgeon.uk
- Extended 2015 Philipp Schaad philipp@schaadfamily.com
+ Extended 2015 Philipp Schaad schaad.phil@gmail.com
                                                       
    DON'T BE A DICK PUBLIC LICENSE TERMS AND CONDITIONS
 FOR COPYING, DISTRIBUTION AND MODIFICATION.           
